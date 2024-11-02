@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import HttpProvider from "./_frontend/providers/HttpProvider";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -28,7 +29,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <HttpProvider>
+          <div
+            className="min-h-screen bg-no-repeat bg-cover  text-gray-900 flex justify-center "
+            style={{
+              backgroundImage: "url('/images/bg.webp')",
+            }}
+          >
+            <div className="absolute inset-0 bg-black opacity-50"></div>
+
+            <div className="h-fit lg:h-auto  relative max-w-screen-xl m-4 sm:m-10   shadow  rounded-lg flex justify-center flex-1 bg-dark-card  ">
+              {children}
+            </div>
+          </div>
+        </HttpProvider>
       </body>
     </html>
   );
