@@ -1,4 +1,4 @@
-import { LOGIN_ROUTE } from "@/app/constants/route";
+import { LOGIN_ROUTE } from "@/constants/route";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Button, Input } from "rizzui";

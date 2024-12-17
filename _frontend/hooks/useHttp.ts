@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { LOGIN_PATH } from "@/app/constants/api";
+import { LOGIN_PATH } from "@/constants/api";
 import {
   useMutation,
   UseMutationOptions,

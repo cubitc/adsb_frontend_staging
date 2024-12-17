@@ -1,8 +1,9 @@
 "use client";
-import ReactToast from "@/app/_frontend/components/ReactToast";
-import useHttp from "@/app/_frontend/hooks/useHttp";
-import { LOGIN_PATH } from "@/app/constants/api";
-import { SIGNUP_ROUTE } from "@/app/constants/route";
+
+import ReactToast from "@/_frontend/components/ReactToast";
+import useHttp from "@/_frontend/hooks/useHttp";
+import { LOGIN_PATH } from "@/constants/api";
+import { SIGNUP_ROUTE } from "@/constants/route";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

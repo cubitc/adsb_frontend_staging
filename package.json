@@ -2,6 +2,10 @@
   "name": "nextjs14-rizzui-boilerplate",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">=1.22"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,13 +15,22 @@
   "dependencies": {
     "@floating-ui/react": "^0.26.27",
     "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
+    "@tanstack/react-query": "^5.62.7",
+    "axios": "^1.7.9",
+    "jose": "^5.9.6",
     "next": "15.0.2",
     "react": "19.0.0-rc-02c0e824-20241028",
+    "react-cookie": "^7.2.2",
     "react-dom": "19.0.0-rc-02c0e824-20241028",
-    "rizzui": "^0.8.7"
+    "react-hook-form": "^7.54.1",
+    "react-hot-toast": "^2.4.1",
+    "rizzui": "^0.8.7",
+    "universal-cookie": "^7.2.2"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.9",
+    "@tanstack/react-query-devtools": "^5.62.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

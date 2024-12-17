@@ -1,10 +1,6 @@
+import { DASHBOARD_ROUTE, LOGIN_ROUTE, SIGNUP_ROUTE } from "@/constants/route";
 import * as jose from "jose";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  DASHBOARD_ROUTE,
-  LOGIN_ROUTE,
-  SIGNUP_ROUTE,
-} from "./app/constants/route";
 
 const publicPath = [LOGIN_ROUTE, SIGNUP_ROUTE];
 

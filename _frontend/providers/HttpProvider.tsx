@@ -1,6 +1,6 @@
 "use client";
 
-import { LOGIN_ROUTE } from "@/app/constants/route";
+import { LOGIN_ROUTE } from "@/constants/route";
 import {
   QueryCache,
   QueryClient,

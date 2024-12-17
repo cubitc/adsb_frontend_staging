@@ -1,11 +1,11 @@
 "use client";
-import { useFirstSegment } from "@/app/_frontend/hooks/useFirstSegment";
-import { cn } from "@/app/_frontend/utils/css";
+
+import { useFirstSegment } from "@/_frontend/hooks/useFirstSegment";
 import {
   DASHBOARD_ROUTE,
   PACKAGE_ROUTE,
   WITHDRAW_ROUTE,
-} from "@/app/constants/route";
+} from "@/constants/route";
 import {
   BanknotesIcon,
   BoltIcon,
@@ -14,6 +14,7 @@ import {
 } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { cn } from "rizzui";
 
 interface LayoutProps {
   children: ReactNode;
