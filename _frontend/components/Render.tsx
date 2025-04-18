@@ -22,7 +22,6 @@ const Render: FC<RenderProps> & {
   let otherwise: ReactNode | null = null;
 
   Children.forEach(children, (child) => {
-    // Type assertion to specify child as a ReactElement with optional props
     const element = child as ReactElement<{ isTrue?: boolean }>;
     if (element && element.props) {
       const { isTrue } = element.props;
