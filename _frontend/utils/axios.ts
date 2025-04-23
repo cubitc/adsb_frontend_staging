@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { cookieName } from "../enums/cookie";
 
 const cookie = new Cookies();
 
@@ -13,7 +14,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = cookie.get(`x-token`);
+    const token = cookie.get(cookieName.x_token);
     if (token) config.headers.Authorization = token;
     return config;
   },
