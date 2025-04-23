@@ -1,6 +1,10 @@
+import TopLoader from "@/_frontend/components/loaders/TopLoader";
+import GlobalModal from "@/_frontend/components/modals/GlobalModal";
 import HttpProvider from "@/_frontend/providers/HttpProvider";
+import { JotaiProvider } from "@/_frontend/providers/JotaiProvider";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -29,7 +33,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <HttpProvider>{children}</HttpProvider>
+        <HttpProvider>
+          <TopLoader />
+          <JotaiProvider>
+            {children}
+            <Toaster />
+            <GlobalModal />
+          </JotaiProvider>
+        </HttpProvider>
       </body>
     </html>
   );
