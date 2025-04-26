@@ -11,6 +11,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        inter: ["var(--font-inter)"],
+        lexend: ["var(--font-lexend)"],
+      },
       colors: {
         /*
          * body, modal, drawer background & ring-offset-color
