@@ -8,6 +8,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/_frontend/components/tabs";
+import { cookieName } from "@/_frontend/enums/cookie";
+import { useAppUser } from "@/_frontend/hooks/use-app-user";
+import { routes } from "@/constants/route";
 import {
   Coins,
   DollarSign,
@@ -18,7 +21,10 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 import { AffiliateContent } from "./_components/AffiliateContent";
 import { CoinForecastContent } from "./_components/CoinForecastContent";
 import PackageContent from "./_components/PackageContent";
@@ -27,6 +33,10 @@ import { WithdrawalContent } from "./_components/WithdrawalContent";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const { user } = useAppUser();
+  const router = useRouter();
+  const [_, __, removeCookie] = useCookies([cookieName.x_token]);
+  const { reset } = useAppUser();
 
   return (
     <div className="min-h-screen bg-background">
@@ -38,17 +48,23 @@ const Page = () => {
                 <Shield className="w-5 h-5 text-primary-foreground" />
               </div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-crypto-blue bg-clip-text text-transparent">
-                ADSB Coin Mining
+                {process.env.REACT_APP_NAME}
               </h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Welcome back</p>
-                <p className="font-medium text-foreground">
-                  mytu@mailinator.com
-                </p>
+                <p className="font-medium text-foreground">{user.user_uid}</p>
               </div>
-              <Button className="border-border  " color="danger">
+              <Button
+                className="border-border cursor-pointer"
+                color="danger"
+                onClick={() => {
+                  removeCookie(cookieName.x_token, { path: "/" });
+                  reset();
+                  router.replace(routes.auth.login);
+                }}
+              >
                 Logout
               </Button>
             </div>

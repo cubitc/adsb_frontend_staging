@@ -11,7 +11,9 @@ import { Form } from "@/_frontend/components/forms/form";
 import { Input } from "@/_frontend/components/input";
 import { Password } from "@/_frontend/components/password";
 import { cookieName } from "@/_frontend/enums/cookie";
+import { useAppUser } from "@/_frontend/hooks/use-app-user";
 import useHttp from "@/_frontend/hooks/use-http";
+import UserModel from "@/_frontend/models/user-model";
 import { api } from "@/constants/api";
 import { routes } from "@/constants/route";
 import { Lock, Mail } from "lucide-react";
@@ -23,10 +25,11 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { LoginSchema, LoginSchemaType } from "../_components/login-schema";
 
 type LoginResponse = {
-  access_token: string;
+  user?: UserModel & { access_token?: string | null };
 };
 const Page = () => {
   const { post, getErrorMap } = useHttp();
+  const { setUser } = useAppUser();
 
   const router = useRouter();
 
@@ -37,9 +40,13 @@ const Page = () => {
     {
       onSuccess: (response) => {
         const data = response?.data as LoginResponse;
+        setUser({
+          user_uid: data?.user?.user_uid || null,
+          email: data?.user?.email || null,
+        });
         const expires = new Date(Date.now() + 60 * 60 * 1000);
 
-        const token = data?.access_token;
+        const token = data?.user?.access_token;
         setCookie(cookieName.x_token, token, {
           path: "/",
           expires,

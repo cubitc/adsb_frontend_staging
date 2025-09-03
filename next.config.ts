@@ -3,9 +3,12 @@ import { routes } from "./constants/route";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: "standalone",
+
   env: {
     REACT_APP_SERVER_ENDPOINT: process.env.REACT_APP_SERVER_ENDPOINT,
     JWT_SECRET: process.env.JWT_SECRET,
+    REACT_APP_NAME: process.env.REACT_APP_NAME,
   },
   async redirects() {
     return [
