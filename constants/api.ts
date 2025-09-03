@@ -3,4 +3,7 @@ export const api = {
     login: "v1/auth/login",
     register: "v1/auth/register",
   },
+  affiliate: {
+    index: "v1/affiliates",
+  },
 };

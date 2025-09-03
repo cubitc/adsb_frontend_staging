@@ -25,9 +25,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
-import { AffiliateContent } from "./_components/AffiliateContent";
+import { AffiliateContent } from "./_components/affiliate-content";
 import { CoinForecastContent } from "./_components/CoinForecastContent";
-import PackageContent from "./_components/PackageContent";
+import PackageContent from "./_components/package-content";
 import { ResellerContent } from "./_components/ResellerContent";
 import { WithdrawalContent } from "./_components/WithdrawalContent";
 
@@ -81,7 +81,7 @@ const Page = () => {
                   <p className="text-sm text-muted-foreground">
                     Active Packages
                   </p>
-                  <p className="text-2xl font-bold text-foreground">4</p>
+                  <p className="text-2xl font-bold text-foreground">0</p>
                 </div>
                 <Package className="w-8 h-8 text-primary" />
               </div>
@@ -92,7 +92,7 @@ const Page = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">ADSB Balance</p>
-                  <p className="text-2xl font-bold text-foreground">400</p>
+                  <p className="text-2xl font-bold text-foreground">0</p>
                 </div>
                 <Coins className="w-8 h-8 text-crypto-gold" />
               </div>
@@ -127,21 +127,21 @@ const Page = () => {
           <TabsList className="grid w-full grid-cols-5 bg-card border border-border">
             <TabsTrigger
               value="overview"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white"
             >
               <LayoutDashboard className="w-4 h-4" />
               <span className="hidden sm:inline">Package</span>
             </TabsTrigger>
             <TabsTrigger
               value="reseller"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white"
             >
               <ShoppingCart className="w-4 h-4" />
               <span className="hidden sm:inline">Reseller</span>
             </TabsTrigger>
             <TabsTrigger
               value="affiliate"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white"
             >
               <Users className="w-4 h-4" />
               <span className="hidden sm:inline">Affiliate</span>
@@ -149,14 +149,14 @@ const Page = () => {
 
             <TabsTrigger
               value="withdrawal"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white"
             >
               <Wallet className="w-4 h-4" />
               <span className="hidden sm:inline">Withdraw</span>
             </TabsTrigger>
             <TabsTrigger
               value="forecast"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white"
             >
               <DollarSign className="w-4 h-4" />
               <span className="hidden sm:inline">Coin Forecast</span>

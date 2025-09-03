@@ -87,19 +87,6 @@ export function WithdrawalContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-r from-success/10 to-crypto-gold/10 border-success/20">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Wallet className="w-5 h-5 text-success" />
-            <span>Withdrawal Center</span>
-          </CardTitle>
-          <CardDescription>
-            Withdraw your earnings to your BEP20 wallet
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Withdrawal Form */}
         <Card className="bg-gradient-to-br from-card to-secondary border-border">
