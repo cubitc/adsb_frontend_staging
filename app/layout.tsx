@@ -1,11 +1,13 @@
-import TopLoader from "@/_frontend/components/loaders/TopLoader";
-import GlobalModal from "@/_frontend/components/modals/GlobalModal";
-import HttpProvider from "@/_frontend/providers/HttpProvider";
-import { JotaiProvider } from "@/_frontend/providers/JotaiProvider";
+import TopLoader from "@/_frontend/components/loaders/top-loader";
+import GlobalModal from "@/_frontend/components/modals/global-modal";
+import HttpProvider from "@/_frontend/providers/http-provider";
+import { JotaiProvider } from "@/_frontend/providers/jotai-provider";
 import { cn } from "@/_frontend/utils/css";
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import { inter, lexendDeca } from "./font";
+
+import CookiesProvider from "@/_frontend/providers/cookie-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,14 +26,16 @@ export default function RootLayout({
         className={cn(inter.variable, lexendDeca.variable)}
         suppressHydrationWarning
       >
-        <HttpProvider>
-          <TopLoader />
-          <JotaiProvider>
-            {children}
-            <Toaster />
-            <GlobalModal />
-          </JotaiProvider>
-        </HttpProvider>
+        <CookiesProvider>
+          <HttpProvider>
+            <TopLoader />
+            <JotaiProvider>
+              {children}
+              <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+              <GlobalModal />
+            </JotaiProvider>
+          </HttpProvider>
+        </CookiesProvider>
       </body>
     </html>
   );

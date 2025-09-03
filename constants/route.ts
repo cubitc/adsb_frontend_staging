@@ -8,6 +8,7 @@ export const DASHBOARD_ROUTE = "/dashboard";
 export const routes = {
   auth: {
     login: "/login",
+    register: "/register",
   },
   dashboard: {
     index: "/dashboard",

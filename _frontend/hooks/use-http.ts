@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
-import { LOGIN_PATH } from "@/constants/api";
 import {
   useMutation,
   UseMutationOptions,
@@ -9,193 +8,162 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import toast from "react-hot-toast";
-import Cookies from "universal-cookie";
-import { cookieName } from "../enums/cookie";
 import instance from "../utils/axios";
 
 interface ValidationErrorResponse {
-  success: boolean;
-  errors: {
-    [key: string]: string[];
-  };
+  success?: boolean;
+  message?: string;
+  errors?: Record<string, string[]>;
 }
+
 interface ApiResponse<T> {
-  [x: string]: any;
   data: T;
+  [key: string]: any;
 }
 
 const pathSeparator = "/";
 
-export const useHttp = () => {
-  const destroy = <TVariables, TData = unknown>(
+function getErrorMessage<TVariables>(
+  error: AxiosError<ValidationErrorResponse> | null | undefined,
+  field: keyof TVariables
+): string | undefined {
+  return error?.response?.data?.errors?.[field as string]?.[0];
+}
+
+function useHttp() {
+  const get = <TResponse, TError = AxiosError>(
     path: string,
-    options?: UseMutationOptions<
-      ApiResponse<TData>,
-      AxiosError<ValidationErrorResponse>,
-      TVariables
-    >
+    options?: UseQueryOptions<ApiResponse<TResponse>, TError>
   ) => {
-    const mutation = useMutation<
-      ApiResponse<TData>,
-      AxiosError<ValidationErrorResponse>,
-      TVariables
-    >({
-      mutationKey: [path],
-      mutationFn: () =>
-        instance
-          .delete(path)
-          .then((response: AxiosResponse<ApiResponse<TData>>) => {
-            return response.data;
-          }),
-      onError: () => {
-        toast.error("Oops. Unexpected error occurred");
-      },
-      ...options,
-    });
-
-    const errorMsg = <TKey extends keyof TVariables>(
-      field: TKey
-    ): string | undefined => {
-      return (
-        mutation.error?.response?.data?.errors?.[field as string]?.[0] ||
-        undefined
-      );
-    };
-
-    return { ...mutation, errorMsg };
-  };
-
-  const get = <TData, TError = AxiosError>(
-    path: string,
-    options?: UseQueryOptions<ApiResponse<TData>, TError>
-  ) => {
-    const query = useQuery<ApiResponse<TData>, TError>({
+    const query = useQuery<ApiResponse<TResponse>, TError>({
       queryKey: [path],
-      staleTime: 0,
-      gcTime: 0,
       queryFn: ({ queryKey }) =>
         instance
           .get(queryKey.join(pathSeparator))
-          .then((response) => response as ApiResponse<TData>),
+          .then((res) => res as ApiResponse<TResponse>),
+      staleTime: 0,
+      gcTime: 0,
       ...options,
     });
 
     return { ...query, data: query.data?.data };
   };
-  const post = <TVariables, TData = unknown>(
+
+  const createMutation = <TVariables, TResponse = unknown>(
+    method: "post" | "patch" | "delete",
     path: string,
     options?: UseMutationOptions<
-      ApiResponse<TData>,
+      ApiResponse<TResponse>,
       AxiosError<ValidationErrorResponse>,
       TVariables
     >,
     headers?: Record<string, string>,
-    { withCredentials = false } = {}
+    config: { withCredentials?: boolean } = {}
   ) => {
+    const mutationFn = (payload: TVariables) => {
+      const axiosConfig = {
+        headers: { ...headers },
+        withCredentials: config.withCredentials,
+      };
+
+      let request: Promise<AxiosResponse<ApiResponse<TResponse>>>;
+      if (method === "post") {
+        request = instance.post(path, payload, axiosConfig);
+      } else if (method === "patch") {
+        request = instance.patch(path, payload, axiosConfig);
+      } else {
+        request = instance.delete(path, axiosConfig);
+      }
+
+      return request.then((response) => {
+        return response.data;
+      });
+    };
+
     const mutation = useMutation<
-      ApiResponse<TData>,
+      ApiResponse<TResponse>,
       AxiosError<ValidationErrorResponse>,
       TVariables
     >({
       mutationKey: [path],
-      mutationFn: (payload: TVariables) =>
-        instance
-          .post(path, payload, {
-            headers: {
-              ...headers,
-            },
-            withCredentials: withCredentials,
-          })
-          .then((response: AxiosResponse<ApiResponse<TData>>) => {
-            const requestUrl = response?.request.responseURL as string;
-            if (requestUrl.includes(LOGIN_PATH)) {
-              const jwt: string | undefined = response.headers["authorization"];
-              const currentTime = new Date();
+      mutationFn,
+      onError: (error: AxiosError<ValidationErrorResponse>) => {
+        if (!options?.onError) {
+          const data = error?.response?.data;
 
-              currentTime.setHours(9999);
-              const cookie = new Cookies();
-              cookie.set(cookieName.x_token, jwt, {
-                expires: currentTime,
-                path: "/",
-              });
+          const firstError =
+            data?.errors && Object.values(data.errors)?.[0]?.[0];
 
-              currentTime.setHours(9999);
-
-              cookie.set(cookieName.x_user_id, response?.data?.id, {
-                path: "/",
-                expires: currentTime,
-              });
-            }
-            return response.data;
-          }),
-      onError: () => {
-        toast.error("Oops. Unexpected error occurred");
+          toast.error(
+            data?.message || firstError || "Oops. Unexpected error occurred"
+          );
+        }
       },
       ...options,
     });
 
-    const errorMsg = <TKey extends keyof TVariables>(
-      field: TKey
-    ): string | undefined => {
-      return (
-        mutation.error?.response?.data?.errors?.[field as string]?.[0] ||
-        undefined
-      );
-    };
+    const errorMsg = <TKey extends keyof TVariables>(field: TKey) =>
+      getErrorMessage<TVariables>(mutation.error, field);
 
     return { ...mutation, errorMsg };
   };
-
-  const patch = <TVariables, TData = unknown>(
-    path: string,
-    options?: UseMutationOptions<
-      ApiResponse<TData>,
-      AxiosError<ValidationErrorResponse>,
-      TVariables
-    >,
-    headers?: Record<string, string>
-  ) => {
-    const mutation = useMutation<
-      ApiResponse<TData>,
-      AxiosError<ValidationErrorResponse>,
-      TVariables
-    >({
-      mutationKey: [path],
-      mutationFn: (payload: TVariables) =>
-        instance
-          .patch(path, payload, {
-            headers: {
-              ...headers,
-            },
-          })
-          .then((response: AxiosResponse<ApiResponse<TData>>) => {
-            return response.data;
-          }),
-      onError: () => {
-        toast.error("Oops. Unexpected error occurred");
-      },
-      ...options,
-    });
-
-    const errorMsg = <TKey extends keyof TVariables>(
-      field: TKey
-    ): string | undefined => {
-      return (
-        mutation.error?.response?.data?.errors?.[field as string]?.[0] ||
-        undefined
-      );
+  function getErrorMap<TFields extends Record<string, any>>(
+    error?: AxiosError<ValidationErrorResponse> | null
+  ): Partial<Record<keyof TFields, string>> & { _global?: string } {
+    const result = {} as Partial<Record<keyof TFields, string>> & {
+      _global?: string;
     };
 
-    // Extend the mutation return object with errorMsg
-    return { ...mutation, errorMsg };
-  };
+    const data = error?.response?.data;
+    if (!data) return result;
 
+    if (data.message) {
+      result._global = data.message;
+    }
+
+    if (data.errors) {
+      for (const key in data.errors) {
+        if (key in result || true) {
+          result[key as keyof TFields] = data.errors[key][0] as any;
+        }
+      }
+    }
+
+    return result;
+  }
   return {
+    getErrorMap,
     get,
-    post,
-    patch,
-    destroy,
+    post: <TVariables, TResponse = unknown>(
+      path: string,
+      options?: UseMutationOptions<
+        ApiResponse<TResponse>,
+        AxiosError<ValidationErrorResponse>,
+        TVariables
+      >,
+      headers?: Record<string, string>,
+      config?: { withCredentials?: boolean }
+    ) => createMutation("post", path, options, headers, config),
+
+    patch: <TVariables, TResponse = unknown>(
+      path: string,
+      options?: UseMutationOptions<
+        ApiResponse<TResponse>,
+        AxiosError<ValidationErrorResponse>,
+        TVariables
+      >,
+      headers?: Record<string, string>
+    ) => createMutation("patch", path, options, headers),
+
+    destroy: <TVariables, TResponse = unknown>(
+      path: string,
+      options?: UseMutationOptions<
+        ApiResponse<TResponse>,
+        AxiosError<ValidationErrorResponse>,
+        TVariables
+      >
+    ) => createMutation("delete", path, options),
   };
-};
+}
 
 export default useHttp;
