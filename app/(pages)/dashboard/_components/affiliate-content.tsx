@@ -62,9 +62,9 @@ export function AffiliateContent() {
   return (
     <div className="space-y-6">
       <Card className="bg-gradient-to-r from-crypto-blue/10 to-crypto-purple/10 border-crypto-blue/20">
-        <CardHeader>
+        <CardHeader className="px-6 py-3">
           <CardTitle className="flex items-center space-x-2">
-            <span>Affiliates & Commissions</span>
+            <span className="text-lg">Affiliates & Commissions</span>
           </CardTitle>
         </CardHeader>
       </Card>

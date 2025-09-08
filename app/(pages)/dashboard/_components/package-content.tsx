@@ -7,226 +7,290 @@ import {
   CardHeader,
   CardTitle,
 } from "@/_frontend/components/card";
-import { Coins, Package, Plus } from "lucide-react";
+import Render from "@/_frontend/components/Render";
+import useHttp from "@/_frontend/hooks/use-http";
+import { useModal } from "@/_frontend/hooks/use-modal";
+import PackageModel from "@/_frontend/models/package-model";
+import { api } from "@/constants/api";
+import { Check, Key, Package, Plus, Users, Zap } from "lucide-react";
+import { FC } from "react";
+import { GridLoader } from "react-spinners";
+import PackageModal from "./modals/standard-package-modal";
+type ResponseData = {
+  data: PackageModel;
+};
+type Props = {
+  onPurchased?: () => void;
+};
+const PackageContent: FC<Props> = ({ onPurchased }) => {
+  const { openModal, closeModal } = useModal();
+  const { get } = useHttp();
 
-const PackageContent = () => {
+  const { isLoading, data, refetch } = get<ResponseData>(api.package.index);
+  const packageInfo = data?.data;
   return (
     <div className="space-y-6">
       <Card className="bg-gradient-to-r from-crypto-blue/10 to-crypto-purple/10 border-crypto-blue/20">
-        <CardHeader>
+        <CardHeader className="px-6 py-3">
           <CardTitle className="flex items-center space-x-2">
-            <span>Packages</span>
+            <span className="text-lg">Packages</span>
           </CardTitle>
         </CardHeader>
       </Card>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card
-          className={`cursor-pointer transition-all duration-200 border-2 ${
-            tab === "package"
-              ? "border-primary bg-primary/5"
-              : "border-border hover:border-primary/50"
-          }`}
-          onClick={() => setTab("package")}
-        >
-          <CardContent className="p-6 text-center">
-            <Wallet className="w-8 h-8 text-primary mx-auto mb-2" />
-            <h3 className="font-semibold text-foreground">View Package</h3>
-            <p className="text-sm text-muted-foreground">Purchase package</p>
-          </CardContent>
-        </Card>
-
-        <Card
-          className={`cursor-pointer transition-all duration-200 border-2 ${
-            tab === "pin"
-              ? "border-crypto-gold bg-crypto-gold/5"
-              : "border-border hover:border-crypto-gold/50"
-          }`}
-          onClick={() => setTab("pin")}
-        >
-          <CardContent className="p-6 text-center">
-            <Key className="w-8 h-8 text-crypto-gold mx-auto mb-2" />
-            <h3 className="font-semibold text-foreground">PIN Activation</h3>
-            <p className="text-sm text-muted-foreground">Use activation code</p>
-          </CardContent>
-        </Card>
-      </div> */}
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Current Packages */}
         <Card className="bg-gradient-to-br from-card to-secondary border-border">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Package className="w-5 h-5 text-primary" />
-              <span>Active Packages</span>
+              <span>Purchase Packages</span>
             </CardTitle>
-            <CardDescription>
-              Your current mining packages and token balance
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-background rounded-lg border border-border">
-              <div>
-                <div className="font-medium text-foreground">
-                  Standard Mining Package
+            <Render>
+              <Render.When isTrue={isLoading}>
+                <div className="text-center pt-8 pb-16 justify-center">
+                  <GridLoader color="#3889c2" />
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  $10 per package
-                </div>
-              </div>
-              <Badge className="bg-success/20 text-success">4 Active</Badge>
-            </div>
+              </Render.When>
+              <Render.Else>
+                <Card className="bg-gradient-card border-crypto-gold/30">
+                  <CardHeader className="px-6  ">
+                    <CardTitle className="flex items-center gap-x-2">
+                      <div className="flex flex-col md:flex-row justify-between items-center w-full gap-2">
+                        <div className="flex flex-row items-center gap-2">
+                          <Zap className="w-5 h-5 text-crypto-gold" />
 
-            <div className="flex items-center justify-between p-4 bg-background rounded-lg border border-border ">
-              <div className="flex items-center space-x-2">
-                <Coins className="w-5 h-5 text-crypto-gold" />
-                <div>
-                  <p className="font-medium text-foreground">ADSB Balance</p>
-                  <p className="text-sm text-muted-foreground">
-                    Available tokens
-                  </p>
-                </div>
-              </div>
-              <span className="text-xl font-bold text-crypto-gold">400</span>
-            </div>
+                          <div className="text-lg">
+                            Standard Package - $
+                            {String(packageInfo?.package_infos?.package_price)}
+                          </div>
+                        </div>
+                        <div>
+                          <Button
+                            onClick={() =>
+                              openModal({
+                                view: (
+                                  <PackageModal
+                                    onClose={closeModal}
+                                    pkg={packageInfo}
+                                    onPurchased={() => {
+                                      refetch();
+                                      onPurchased?.();
+                                    }}
+                                  />
+                                ),
+                              })
+                            }
+                            className="bg-gradient-to-r from-primary to-crypto-blue hover:shadow-[var(--shadow-glow)] transition-all duration-300 w-full "
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Buy Package
+                          </Button>
+                        </div>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pb-6 pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-success" />
+                          <span className="text-sm">
+                            Receive{" "}
+                            {String(
+                              packageInfo?.package_infos?.adsb_per_package
+                            )}{" "}
+                            ADSB Coin per package
+                          </span>
+                        </div>
+                        {!packageInfo?.has_active_package && (
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-success" />
+                            <span className="text-sm">Account activation</span>
+                          </div>
+                        )}
+                        {!packageInfo?.has_active_package && (
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-success" />
+                            <span className="text-sm">
+                              Affiliate link activation
+                            </span>
+                          </div>
+                        )}
+                        {!packageInfo?.has_active_package && (
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-success" />
+                            <span className="text-sm">Mining eligibility</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-card border-crypto-gold/30">
+                  <CardHeader className="px-6  ">
+                    <CardTitle className="flex items-center gap-x-2">
+                      <div className="flex flex-col md:flex-row justify-between items-center w-full gap-2">
+                        <div className="flex flex-row items-center gap-2">
+                          <Users className="w-5 h-5 text-crypto-blue" />
 
-            <div className="pt-4">
-              <Button className="bg-gradient-to-r from-primary to-crypto-blue hover:shadow-[var(--shadow-glow)] transition-all duration-300 w-full ">
-                <Plus className="w-4 h-4 mr-2" />
-                Buy Package
-              </Button>
-            </div>
+                          <div className="text-lg">Reseller Packages</div>
+                        </div>
+                        <div>
+                          <Button className="bg-gradient-to-r from-primary to-crypto-blue hover:shadow-[var(--shadow-glow)] transition-all duration-300 w-full ">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Buy Pins
+                          </Button>
+                        </div>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pb-6 pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="px-4 py-2 bg-background rounded border border-border/50 col-span-2">
+                        <h4 className="font-semibold mb-2">Pricing Tiers</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>10-20 pin:</span>
+                            <Badge
+                              variant="secondary"
+                              className="bg-success/20  text-success"
+                            >
+                              ${" "}
+                              {String(
+                                packageInfo?.package_infos
+                                  ?.bulk_purchase_tier_1_price
+                              )}
+                              /package
+                            </Badge>{" "}
+                          </div>
+                          <div className="flex justify-between">
+                            <span>21+ pin:</span>
+                            <Badge
+                              variant="secondary"
+                              className="bg-warning/20 text-warning"
+                            >
+                              ${" "}
+                              {String(
+                                packageInfo?.package_infos
+                                  ?.bulk_purchase_tier_2_price
+                              )}
+                              /package
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-success" />
+                          <span className="text-sm">
+                            Activation PINs via email
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-success" />
+                          <span className="text-sm">
+                            Use for self or downlines
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-success" />
+                          <span className="text-sm">
+                            Bulk pricing discounts
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-card border-crypto-gold/30">
+                  <CardHeader className="px-6  ">
+                    <CardTitle className="flex items-center gap-x-2">
+                      <div className="flex flex-col md:flex-row justify-between items-center w-full gap-2">
+                        <div className="flex flex-row items-center gap-2">
+                          <Key className="w-5 h-5 text-crypto-gold" />
+
+                          <div className="text-lg">Pin Activation</div>
+                        </div>
+                        <div>
+                          <Button className="w-full bg-gradient-to-r from-crypto-gold/30 to-warning hover:shadow-[var(--shadow-glow)] transition-all duration-300">
+                            <Key className="w-4 h-4 mr-2" />
+                            Activate with PIN
+                          </Button>
+                        </div>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pb-6 pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-success" />
+                          <span className="text-sm">Instant activation</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-success" />
+                          <span className="text-sm">
+                            Receive{" "}
+                            {String(
+                              packageInfo?.package_infos?.adsb_per_package
+                            )}{" "}
+                            ADSB Coin per activation
+                          </span>
+                        </div>
+                        {!packageInfo?.has_active_package && (
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-success" />
+                            <span className="text-sm">Account activation</span>
+                          </div>
+                        )}
+                        {!packageInfo?.has_active_package && (
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-success" />
+                            <span className="text-sm">
+                              Affiliate link activation
+                            </span>
+                          </div>
+                        )}
+                        {!packageInfo?.has_active_package && (
+                          <div className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-success" />
+                            <span className="text-sm">Mining eligibility</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Render.Else>
+            </Render>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-card to-secondary border-border">
           <CardHeader>
-            <CardTitle>Package Statistics</CardTitle>
-            <CardDescription>
-              Overview of your investment and returns
-            </CardDescription>
+            <CardTitle>Package Management</CardTitle>
+            <CardDescription>Recent package purchases</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Total Invested
-                </span>
-                <span className="font-medium text-foreground">$40.00</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  ADSB Earned
-                </span>
-                <span className="font-medium text-crypto-gold">400</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Package Value
-                </span>
-                <span className="font-medium text-foreground">
-                  $10 = 100 tokens
-                </span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-border">
-                <span className="text-sm font-medium text-foreground">
-                  Next Token Launch
-                </span>
-                <Badge
-                  variant="secondary"
-                  className="bg-warning/20 text-warning"
-                >
-                  Coming Soon
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        {/* <Card className="bg-gradient-to-br from-card to-secondary border-border">
-              <CardHeader>
-                <CardTitle>PIN Activation</CardTitle>
-                <CardDescription>
-                  Enter your activation PIN code
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <label
-                    htmlFor="pin"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Activation PIN
-                  </label>
-                  <Input
-                    id="pin"
-                    type="text"
-                    placeholder="Enter your PIN code"
-                    className="bg-background border-border text-center  tracking-widest"
-                    maxLength={12}
-                  />
+            <Render>
+              <Render.When isTrue={isLoading}>
+                <div className="text-center pt-8 pb-16 justify-center">
+                  <GridLoader color="#3889c2" />
                 </div>
-
-                <div className="p-4 bg-background rounded-lg border border-border">
-                  <h4 className="font-medium text-foreground mb-2">
-                    How to get a PIN?
-                  </h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Purchase from the Reseller section</li>
-                    <li>• Contact your referrer for bulk packages</li>
-                    <li>• You will receive the pin from your reseller</li>
-                  </ul>
-                </div>
-
-                <Button className="w-full bg-gradient-to-r from-crypto-gold to-warning hover:shadow-[var(--shadow-glow)] transition-all duration-300">
-                  <Key className="w-4 h-4 mr-2" />
-                  Activate with PIN
-                </Button>
-              </CardContent>
-            </Card>
-
-             <Card className="bg-gradient-to-br from-card to-secondary border-border">
-              <CardHeader>
-                <CardTitle>PIN Activation Benefits</CardTitle>
-                <CardDescription>
-                  What you get with PIN activation
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+              </Render.When>
+              <Render.Else>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-sm text-foreground">
-                      Instant activation
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-sm text-foreground">
-                      100 tokens credited
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-sm text-foreground">
-                      Affiliate link activated
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <span className="text-sm text-foreground">
-                      Mining package activated
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-gradient-to-r from-crypto-gold/10 to-warning/10 rounded-lg border border-crypto-gold/20">
-                  <p className="text-sm text-foreground">
-                    <strong>Note:</strong> Each PIN can only be used once. Make
-                    sure to enter the correct PIN code.
+                  <p className="text-muted-foreground mb-4 text-center mt-24">
+                    No recent package purchases.
                   </p>
                 </div>
-              </CardContent>
-            </Card> */}
+              </Render.Else>
+            </Render>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

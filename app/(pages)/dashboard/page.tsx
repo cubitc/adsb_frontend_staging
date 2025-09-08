@@ -1,5 +1,4 @@
 "use client";
-import { Badge } from "@/_frontend/components/badge";
 import { Button } from "@/_frontend/components/button";
 import { Card, CardContent } from "@/_frontend/components/card";
 import {
@@ -22,6 +21,9 @@ import {
   Wallet,
 } from "lucide-react";
 
+import useHttp from "@/_frontend/hooks/use-http";
+import BalanceModel from "@/_frontend/models/balance-model";
+import { api } from "@/constants/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
@@ -31,6 +33,9 @@ import PackageContent from "./_components/package-content";
 import { ResellerContent } from "./_components/ResellerContent";
 import { WithdrawalContent } from "./_components/WithdrawalContent";
 
+type ResponseData = {
+  data: BalanceModel;
+};
 const Page = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { user } = useAppUser();
@@ -38,6 +43,10 @@ const Page = () => {
   const [_, __, removeCookie] = useCookies([cookieName.x_token]);
   const { reset } = useAppUser();
 
+  const { get } = useHttp();
+
+  const { data, refetch } = get<ResponseData>(api.user.balance);
+  const balances = data?.data;
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -92,7 +101,9 @@ const Page = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">ADSB Balance</p>
-                  <p className="text-2xl font-bold text-foreground">0</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {balances?.available_adsb}
+                  </p>
                 </div>
                 <Coins className="w-8 h-8 text-crypto-gold" />
               </div>
@@ -103,14 +114,11 @@ const Page = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Value</p>
+                  <p className="text-sm text-muted-foreground">
+                    Wallet Balance
+                  </p>
                   <p className="text-2xl font-bold text-foreground">
-                    <Badge
-                      variant="secondary"
-                      className="bg-warning/20 text-warning"
-                    >
-                      Coming Soon
-                    </Badge>
+                    {balances?.available_usdt} USDT
                   </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-success" />
@@ -163,7 +171,7 @@ const Page = () => {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
-            <PackageContent />
+            <PackageContent onPurchased={refetch} />
           </TabsContent>
 
           <TabsContent value="reseller">
