@@ -3,4 +3,5 @@ export default interface UserModel {
   full_name?: string | null;
   email?: string | null;
   user_uid?: string | null;
+  is_active?: boolean | null;
 }

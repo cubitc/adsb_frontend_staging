@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/_frontend/components/button";
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   CardTitle,
 } from "@/_frontend/components/card";
 import { Form } from "@/_frontend/components/forms/form";
+import GoldenButton from "@/_frontend/components/golden-button";
 import { Input } from "@/_frontend/components/input";
 import { Password } from "@/_frontend/components/password";
 import { cookieName } from "@/_frontend/enums/cookie";
@@ -102,14 +102,10 @@ const Page = () => {
                     error={errors.password?.message || errorMap.password}
                   />
                 </div>
-                <Button
-                  type="submit"
-                  isLoading={loginReq.isPending}
-                  disabled={loginReq.isPending}
-                  className="w-full bg-gradient-to-r from-primary to-crypto-blue hover:shadow-[var(--shadow-glow)]"
-                >
-                  {"Login"}
-                </Button>
+                <GoldenButton isLoading={loginReq.isPending} type="submit">
+                  Log in
+                </GoldenButton>
+
                 <div
                   className="flex items-center justify-end gap-2 text-sm text-muted-foreground cursor-pointer"
                   onClick={() => router.push(routes.auth.register)}

@@ -4,6 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/_frontend/components/card";
+import GoldenButton from "@/_frontend/components/golden-button";
 import useHttp from "@/_frontend/hooks/use-http";
 import PackageModel from "@/_frontend/models/package-model";
 import { api } from "@/constants/api";
@@ -11,7 +12,6 @@ import { BaseModalProps } from "@/types/modal";
 import { Check, CreditCard, XIcon, Zap } from "lucide-react";
 import { FC } from "react";
 import toast from "react-hot-toast";
-import { Button } from "rizzui/button";
 
 interface Props extends BaseModalProps {
   pkg?: PackageModel;
@@ -19,25 +19,28 @@ interface Props extends BaseModalProps {
 }
 type PurchaseResponse = {
   completed: boolean;
+  redirect_url?: string;
 };
+
 const PackageModal: FC<Props> = ({ onClose, pkg, onPurchased }) => {
   const { post } = useHttp();
   const purchase = post<Record<string, never>, PurchaseResponse>(
     api.package.purchase_standard,
     {
       onSuccess: (data) => {
-        console.log(data.data.completed);
         if (data.data.completed) {
           toast.success("Package purchased successfully");
           onPurchased?.();
           onClose();
+        } else {
+          window.location.href = data.data.redirect_url!;
         }
       },
     }
   );
   const isPending = purchase.isPending;
   return (
-    <div className="relative w-full  md:w-[500px]  transform overflow-hidden rounded-lg bg-gradient-card-secondary px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6    ">
+    <div className="relative w-[calc(100vw-24px)] lg:w-[500px]   transform overflow-hidden rounded-lg bg-gradient-card-secondary px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6    ">
       <div className="font-semibold leading-none tracking-tight text-2xl text-crypto-gold  ">
         Purchase Packages
       </div>
@@ -94,15 +97,13 @@ const PackageModal: FC<Props> = ({ onClose, pkg, onPurchased }) => {
               )}
             </div>
             <div className="p-3 bg-secondary/30 rounded border border-border/50 ">
-              <Button
+              <GoldenButton
                 onClick={() => purchase.mutate({})}
                 isLoading={isPending}
-                disabled={isPending}
-                className="w-full bg-gradient-gold hover:opacity-90 mt-4   text-black"
               >
                 <CreditCard className="w-4 h-4 mr-2" />
                 Purchase ${pkg?.package_infos?.package_price}
-              </Button>
+              </GoldenButton>
             </div>
           </div>
         </CardContent>

@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
 
   env: {
+    REACT_APP_ENDPOINT: process.env.REACT_APP_ENDPOINT,
     REACT_APP_SERVER_ENDPOINT: process.env.REACT_APP_SERVER_ENDPOINT,
     JWT_SECRET: process.env.JWT_SECRET,
     REACT_APP_NAME: process.env.REACT_APP_NAME,

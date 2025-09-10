@@ -1,3 +1,4 @@
+import AccountUnactiveAlert from "@/_frontend/components/alert/account-unactive-alert";
 import { Badge } from "@/_frontend/components/badge";
 import { Button } from "@/_frontend/components/button";
 import {
@@ -7,21 +8,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/_frontend/components/card";
+import GoldenButton from "@/_frontend/components/golden-button";
+import Loader from "@/_frontend/components/loaders/grid-loader";
 import Render from "@/_frontend/components/Render";
 import useHttp from "@/_frontend/hooks/use-http";
 import AffiliateModel from "@/_frontend/models/affiliate-model";
 import { api } from "@/constants/api";
-import { AlertCircle, Copy, DollarSign, TrendingUp } from "lucide-react";
-import { GridLoader } from "react-spinners";
+import { routes } from "@/constants/route";
+import { Copy, DollarSign } from "lucide-react";
+import { FC } from "react";
+import toast from "react-hot-toast";
 
 type ResponseData = {
   data: AffiliateModel;
 };
-export function AffiliateContent() {
+type Props = {
+  onBuyPackageClick?: () => void;
+};
+const AffiliateContent: FC<Props> = ({ onBuyPackageClick }) => {
   const { get } = useHttp();
 
   const { isLoading, data } = get<ResponseData>(api.affiliate.index);
-  const affiliateLink = "https://example.com/ref/user123";
 
   const commissionData = [
     {
@@ -52,62 +59,41 @@ export function AffiliateContent() {
     0
   );
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(affiliateLink);
-    // You could add a toast notification here
-  };
   const affiliateInfo = data?.data;
   const hasActivePackage = affiliateInfo?.has_active_package;
-
+  const affiliateLink = routes.affiliate_link(affiliateInfo?.ref_code || "");
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(affiliateLink);
+    toast.success("Affiliate link copied to clipboard");
+  };
   return (
     <div className="space-y-6">
       <Card className="bg-gradient-to-r from-crypto-blue/10 to-crypto-purple/10 border-crypto-blue/20">
         <CardHeader className="px-6 py-3">
           <CardTitle className="flex items-center space-x-2">
-            <span className="text-lg">Affiliates & Commissions</span>
+            <span className="text-lg">Affiliates & commissions</span>
           </CardTitle>
         </CardHeader>
       </Card>
-      {!isLoading && !hasActivePackage && (
-        <Card className="bg-gradient-to-r from-warning/10 to-destructive/10 border-warning/20">
-          <CardContent className="p-6">
-            <div className="flex items-start space-x-3">
-              <AlertCircle className="w-28  h-28 sm:w-10 sm:h-10 text-warning mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">
-                  Activate Your Account
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Users without active packages don't have affiliate links.
-                  Purchase a package to start earning commissions and appear in
-                  the unilevel hierarchy.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {!isLoading && !hasActivePackage && <AccountUnactiveAlert />}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Commission Structure */}
         <Card className="bg-gradient-to-br from-card to-secondary border-border">
           <CardHeader>
             <CardTitle>Commission Structure</CardTitle>
-            <CardDescription>
-              Earn from 3 levels of your referral network
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Render>
               <Render.When isTrue={isLoading}>
                 <div className="text-center pt-8 pb-16 justify-center">
-                  <GridLoader color="#3889c2" />
+                  <Loader />
                 </div>
               </Render.When>
               <Render.Else>
-                {commissionData.map((level, index) => (
+                {affiliateInfo?.commissions?.map((comm, index) => (
                   <div
-                    key={level.level}
+                    key={comm.level}
                     className="p-4 bg-background rounded-lg border border-border"
                   >
                     <div className="flex justify-between items-center mb-2">
@@ -115,31 +101,43 @@ export function AffiliateContent() {
                         <Badge
                           variant="secondary"
                           className={`
-                        ${
-                          index === 0
-                            ? "bg-success/20 text-success"
-                            : index === 1
-                            ? "bg-crypto-blue/20 text-crypto-blue"
-                            : "bg-crypto-purple/20 text-crypto-purple"
-                        }
-                      `}
+                                ${
+                                  index === 0
+                                    ? "bg-green-600 text-green-100"
+                                    : index === 1
+                                    ? "bg-blue-600 text-blue-100"
+                                    : index === 2
+                                    ? "bg-purple-600 text-purple-100"
+                                    : index === 3
+                                    ? "bg-red-600 text-red-100"
+                                    : index === 4
+                                    ? "bg-yellow-600 text-yellow-100"
+                                    : index === 5
+                                    ? "bg-orange-600 text-orange-100"
+                                    : index === 6
+                                    ? "bg-pink-600 text-pink-100"
+                                    : index === 7
+                                    ? "bg-indigo-600 text-indigo-100"
+                                    : index === 8
+                                    ? "bg-teal-600 text-teal-100"
+                                    : "bg-emerald-600 text-emerald-100"
+                                }
+                              `}
                         >
-                          Level {level.level}
+                          Level {comm.level}
                         </Badge>
-                        <span className="font-medium text-foreground">
-                          {level.percentage}%
-                        </span>
                       </div>
+
                       <span className="text-sm text-muted-foreground">
                         Commissions:{" "}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <p className="text-sm text-muted-foreground">
-                        {level.users} users
+                        {comm.total_packages} packages
                       </p>
                       <span className="font-medium text-foreground">
-                        ${level.total.toFixed(2)} USDT
+                        ${comm.total_amount} USDT
                       </span>
                     </div>
                   </div>
@@ -151,7 +149,7 @@ export function AffiliateContent() {
                       Total Commissions
                     </span>
                     <span className="text-xl font-bold text-success">
-                      ${totalCommissions.toFixed(2)} USDT
+                      ${affiliateInfo?.total_commission} USDT
                     </span>
                   </div>
                 </div>
@@ -172,7 +170,7 @@ export function AffiliateContent() {
             <Render>
               <Render.When isTrue={isLoading}>
                 <div className="text-center pt-8 pb-16 justify-center">
-                  <GridLoader color="#3889c2" />
+                  <Loader />
                 </div>
               </Render.When>
               <Render.Else>
@@ -196,34 +194,47 @@ export function AffiliateContent() {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-3 bg-background rounded-lg border border-border text-center">
-                        <p className="text-2xl font-bold text-foreground">25</p>
+                        <p className="text-2xl font-bold text-foreground">
+                          {affiliateInfo.all_referrals_count}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Total Referrals
                         </p>
                       </div>
                       <div className="p-3 bg-background rounded-lg border border-border text-center">
-                        <p className="text-2xl font-bold text-success">18</p>
+                        <p className="text-2xl font-bold text-success">
+                          {affiliateInfo.active_referrals_count}
+                        </p>
                         <p className="text-sm text-muted-foreground">
                           Active Users
                         </p>
                       </div>
                     </div>
 
-                    <Button className="w-full bg-gradient-to-r from-success to-crypto-gold hover:shadow-[var(--shadow-glow)] transition-all duration-300">
+                    {/* <Button className="w-full bg-gradient-to-r from-success to-crypto-gold hover:shadow-[var(--shadow-glow)] transition-all duration-300">
                       <TrendingUp className="w-4 h-4 mr-2" />
                       View Full Unilevel Tree
-                    </Button>
+                    </Button> */}
                   </>
                 ) : (
-                  <div className="text-center py-8">
-                    <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-4">
-                      Purchase an active package to unlock your affiliate link
-                    </p>
-                    <Button className="bg-gradient-to-r from-primary to-crypto-blue">
-                      Buy Package Now
-                    </Button>
-                  </div>
+                  <Card className="bg-gradient-card shadow-card">
+                    <CardContent className="py-8 text-center">
+                      <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-muted-foreground mb-4">
+                        Get started today—purchase a package to activate your
+                        account, unlock your affiliate link, and start earning
+                        commissions right away!
+                      </h3>
+                      <div className="w-fit mx-auto">
+                        <GoldenButton
+                          className="w-fit hover:bg-crypto-gold hover:opacity-70"
+                          onClick={onBuyPackageClick}
+                        >
+                          Buy Package Now
+                        </GoldenButton>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
 
                 <div className="text-xs text-muted-foreground space-y-1">
@@ -240,4 +251,5 @@ export function AffiliateContent() {
       </div>
     </div>
   );
-}
+};
+export default AffiliateContent;

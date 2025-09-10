@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/_frontend/components/button";
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   CardTitle,
 } from "@/_frontend/components/card";
 import { Form } from "@/_frontend/components/forms/form";
+import GoldenButton from "@/_frontend/components/golden-button";
 import { Input } from "@/_frontend/components/input";
 import { Password } from "@/_frontend/components/password";
 import useHttp from "@/_frontend/hooks/use-http";
@@ -106,14 +106,10 @@ const Page = () => {
                     }
                   />
                 </div>
-                <Button
-                  type="submit"
-                  isLoading={registerReq.isPending}
-                  disabled={registerReq.isPending}
-                  className="w-full bg-gradient-to-r from-primary to-crypto-blue hover:shadow-[var(--shadow-glow)]"
-                >
-                  {"Create Account"}
-                </Button>
+
+                <GoldenButton isLoading={registerReq.isPending} type="submit">
+                  Create Account
+                </GoldenButton>
                 <div
                   className="flex items-center justify-end gap-2 text-sm text-muted-foreground cursor-pointer"
                   onClick={() => router.push(routes.auth.login)}

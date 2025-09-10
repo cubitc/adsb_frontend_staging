@@ -13,4 +13,6 @@ export const routes = {
   dashboard: {
     index: "/dashboard",
   },
+  affiliate_link: (code: string) =>
+    `${process.env.REACT_APP_ENDPOINT}/register?ref=${code}`,
 };
