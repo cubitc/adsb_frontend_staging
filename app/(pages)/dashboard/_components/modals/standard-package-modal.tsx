@@ -6,7 +6,7 @@ import {
 } from "@/_frontend/components/card";
 import GoldenButton from "@/_frontend/components/golden-button";
 import useHttp from "@/_frontend/hooks/use-http";
-import PackageModel from "@/_frontend/models/package-model";
+import StandardPackageListModel from "@/_frontend/models/standard-package-list-model";
 import { api } from "@/constants/api";
 import { BaseModalProps } from "@/types/modal";
 import { Check, CreditCard, XIcon, Zap } from "lucide-react";
@@ -14,7 +14,7 @@ import { FC } from "react";
 import toast from "react-hot-toast";
 
 interface Props extends BaseModalProps {
-  pkg?: PackageModel;
+  pkg?: StandardPackageListModel;
   onPurchased?: () => void;
 }
 type PurchaseResponse = {

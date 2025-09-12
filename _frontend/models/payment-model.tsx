@@ -1,4 +1,4 @@
-export default interface PackagePaymentModel {
+export default interface PaymentModel {
   id?: string | null;
   status?: number | null;
   status_humanized?: string | null;

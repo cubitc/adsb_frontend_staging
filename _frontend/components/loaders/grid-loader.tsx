@@ -6,7 +6,7 @@ const Loader = dynamic(
   async () => {
     const { GridLoader } = await import("react-spinners");
     return function InnerLoader() {
-      return <GridLoader color="#3889c2" className="mt-16" />;
+      return <GridLoader color="#3889c2" />;
     };
   },
   { ssr: false }

@@ -15,8 +15,9 @@ import { PaymentStatusEnum } from "@/_frontend/enums/payment_status_enum";
 import useHttp from "@/_frontend/hooks/use-http";
 import { useModal } from "@/_frontend/hooks/use-modal";
 import PackageModel from "@/_frontend/models/package-model";
-import PackageSubscribedModel from "@/_frontend/models/package-subscribed-mode";
+import StandardPackageListModel from "@/_frontend/models/standard-package-list-model";
 import { cn } from "@/_frontend/utils/css";
+import { toLocalDateTime } from "@/_frontend/utils/date";
 import { api } from "@/constants/api";
 import { Check, Key, Package, Plus, Users, Zap } from "lucide-react";
 import { FC } from "react";
@@ -24,13 +25,13 @@ import PinActivationModal from "./modals/pin-activation-modal";
 import ResellerPackageModal from "./modals/reseller-package-modal";
 import PackageModal from "./modals/standard-package-modal";
 type ResponseData = {
-  data: PackageModel;
+  data: StandardPackageListModel;
 };
 type Props = {
   onPurchased?: () => void;
 };
 type PackageResponse = {
-  data: PackageSubscribedModel[];
+  data: PackageModel[];
 };
 const PackageContent: FC<Props> = ({ onPurchased }) => {
   const { openModal, closeModal } = useModal();
@@ -62,7 +63,7 @@ const PackageContent: FC<Props> = ({ onPurchased }) => {
           <CardContent className="space-y-4 ">
             <Render>
               <Render.When isTrue={isLoading}>
-                <div className="text-center pt-8 pb-16 justify-center">
+                <div className="text-center pt-16 pb-16 justify-center">
                   <Loader />
                 </div>
               </Render.When>
@@ -322,7 +323,7 @@ const PackageContent: FC<Props> = ({ onPurchased }) => {
           <CardContent className="flex-1 overflow-y-auto space-y-4">
             <Render>
               <Render.When isTrue={packageSub.isLoading}>
-                <div className="text-center pt-8 pb-16 justify-center">
+                <div className="text-center pt-16 pb-16 justify-center">
                   <Loader />
                 </div>
               </Render.When>
@@ -353,7 +354,7 @@ const PackageContent: FC<Props> = ({ onPurchased }) => {
                               </h3>
 
                               <p className="text-sm text-muted-foreground">
-                                {new Date(pkg.created_at!).toLocaleString()}
+                                {toLocalDateTime(pkg.created_at!)}
                               </p>
                             </div>
                             <div className="text-right">

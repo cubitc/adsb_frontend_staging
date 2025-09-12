@@ -6,7 +6,7 @@ import {
 } from "@/_frontend/components/card";
 import GoldenButton from "@/_frontend/components/golden-button";
 import useHttp from "@/_frontend/hooks/use-http";
-import PackageModel from "@/_frontend/models/package-model";
+import StandardPackageListModel from "@/_frontend/models/standard-package-list-model";
 import { api } from "@/constants/api";
 import { BaseModalProps } from "@/types/modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,7 @@ import { Input } from "rizzui/input";
 import { z } from "zod";
 
 interface Props extends BaseModalProps {
-  pkg?: PackageModel;
+  pkg?: StandardPackageListModel;
   onPurchased?: () => void;
 }
 type PurchaseResponse = { completed: boolean };

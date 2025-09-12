@@ -16,7 +16,7 @@ import CloudMiningContent from "./cloud-mining-content";
 import { PhysicalMiningContent } from "./physical-mining-content";
 
 export function MiningContent() {
-  const [activeTab, setActiveTab] = useState("physical_mining");
+  const [activeTab, setActiveTab] = useState("cloud_mining");
   const { get } = useHttp();
   const { data } = get<UserModel>(api.user.is_active);
   return (
@@ -35,18 +35,18 @@ export function MiningContent() {
       >
         <TabsList className="grid w-full grid-cols-2 bg-card border border-border">
           <TabsTrigger
-            value="physical_mining"
-            className="flex items-center space-x-1 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
-          >
-            <HardDrive className="w-4 h-4 hidden sm:inline" />
-            <span className="text-[13px] md:text-sm">Physical Mining</span>
-          </TabsTrigger>
-          <TabsTrigger
             value="cloud_mining"
             className="flex items-center space-x-1 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
           >
             <Cloud className="w-4 h-4 hidden sm:inline" />
             <span className="text-[13px] md:text-sm">Cloud Mining</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="physical_mining"
+            className="flex items-center space-x-1 data-[state=active]:bg-gray-700 data-[state=active]:text-white"
+          >
+            <HardDrive className="w-4 h-4 hidden sm:inline" />
+            <span className="text-[13px] md:text-sm">Physical Mining</span>
           </TabsTrigger>
         </TabsList>
         {data && !data.is_active && <AccountUnactiveAlert />}

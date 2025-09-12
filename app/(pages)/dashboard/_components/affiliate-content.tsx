@@ -86,7 +86,7 @@ const AffiliateContent: FC<Props> = ({ onBuyPackageClick }) => {
           <CardContent className="space-y-4">
             <Render>
               <Render.When isTrue={isLoading}>
-                <div className="text-center pt-8 pb-16 justify-center">
+                <div className="text-center pt-16 pb-16 justify-center">
                   <Loader />
                 </div>
               </Render.When>
@@ -169,7 +169,7 @@ const AffiliateContent: FC<Props> = ({ onBuyPackageClick }) => {
           <CardContent className="space-y-4">
             <Render>
               <Render.When isTrue={isLoading}>
-                <div className="text-center pt-8 pb-16 justify-center">
+                <div className="text-center pt-16 pb-16 justify-center">
                   <Loader />
                 </div>
               </Render.When>
