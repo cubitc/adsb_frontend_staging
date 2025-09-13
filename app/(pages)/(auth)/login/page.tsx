@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/_frontend/components/button";
 import {
   Card,
   CardContent,
@@ -8,10 +7,13 @@ import {
   CardTitle,
 } from "@/_frontend/components/card";
 import { Form } from "@/_frontend/components/forms/form";
+import GoldenButton from "@/_frontend/components/golden-button";
 import { Input } from "@/_frontend/components/input";
 import { Password } from "@/_frontend/components/password";
 import { cookieName } from "@/_frontend/enums/cookie";
+import { useAppUser } from "@/_frontend/hooks/use-app-user";
 import useHttp from "@/_frontend/hooks/use-http";
+import UserModel from "@/_frontend/models/user-model";
 import { api } from "@/constants/api";
 import { routes } from "@/constants/route";
 import { Lock, Mail } from "lucide-react";
@@ -23,10 +25,11 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { LoginSchema, LoginSchemaType } from "../_components/login-schema";
 
 type LoginResponse = {
-  access_token: string;
+  user?: UserModel & { access_token?: string | null };
 };
 const Page = () => {
   const { post, getErrorMap } = useHttp();
+  const { setUser } = useAppUser();
 
   const router = useRouter();
 
@@ -37,9 +40,13 @@ const Page = () => {
     {
       onSuccess: (response) => {
         const data = response?.data as LoginResponse;
+        setUser({
+          user_uid: data?.user?.user_uid || null,
+          email: data?.user?.email || null,
+        });
         const expires = new Date(Date.now() + 60 * 60 * 1000);
 
-        const token = data?.access_token;
+        const token = data?.user?.access_token;
         setCookie(cookieName.x_token, token, {
           path: "/",
           expires,
@@ -69,8 +76,8 @@ const Page = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md bg-gradient-to-br from-card to-secondary border-border shadow-[var(--shadow-card)]">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl pb-2 bg-gradient-to-r from-primary to-crypto-blue bg-clip-text text-transparent">
-            ADSB Coin
+          <CardTitle className="text-2xl pb-2 text-crypto-blue bg-clip-text  ">
+            {process.env.REACT_APP_NAME}
           </CardTitle>
           <CardDescription>Login</CardDescription>
         </CardHeader>
@@ -95,14 +102,10 @@ const Page = () => {
                     error={errors.password?.message || errorMap.password}
                   />
                 </div>
-                <Button
-                  type="submit"
-                  isLoading={loginReq.isPending}
-                  disabled={loginReq.isPending}
-                  className="w-full bg-gradient-to-r from-primary to-crypto-blue hover:shadow-[var(--shadow-glow)]"
-                >
-                  {"Login"}
-                </Button>
+                <GoldenButton isLoading={loginReq.isPending} type="submit">
+                  Log in
+                </GoldenButton>
+
                 <div
                   className="flex items-center justify-end gap-2 text-sm text-muted-foreground cursor-pointer"
                   onClick={() => router.push(routes.auth.register)}

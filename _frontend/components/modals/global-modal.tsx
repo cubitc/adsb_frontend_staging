@@ -16,11 +16,10 @@ const GlobalModal = () => {
   return (
     <Modal
       isOpen={isOpen}
-      onClose={closeModal}
+      onClose={() => {}}
       customSize={customSize}
       size={size}
       overlayClassName="dark:bg-opacity-40 dark:backdrop-blur-lg"
-      containerClassName="dark:bg-gray-100"
       className="z-[9999] [&_.pointer-events-none]:overflow-visible"
     >
       {view}

@@ -10,13 +10,7 @@ import {
   CardTitle,
 } from "@/_frontend/components/card";
 import { Input } from "@/_frontend/components/input";
-import {
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Wallet,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle, Clock, Wallet } from "lucide-react";
 
 export function WithdrawalContent() {
   const [amount, setAmount] = useState("");
@@ -87,41 +81,34 @@ export function WithdrawalContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-r from-success/10 to-crypto-gold/10 border-success/20">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Wallet className="w-5 h-5 text-success" />
-            <span>Withdrawal Center</span>
-          </CardTitle>
-          <CardDescription>
-            Withdraw your earnings to your BEP20 wallet
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Withdrawal Form */}
         <Card className="bg-gradient-to-br from-card to-secondary border-border">
           <CardHeader>
             <CardTitle>Request Withdrawal</CardTitle>
-            <CardDescription>
-              Minimum withdrawal amount: $15 USDT
-            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Available Balance */}
-            <div className="p-4 bg-background rounded-lg border border-border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Available Balance
-                  </p>
-                  <p className="text-2xl font-bold text-success">
-                    ${availableBalance.toFixed(2)} USDT
-                  </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-background rounded-lg border border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">ADSB Wallet</p>
+                    <p className="text-2xl font-bold text-success">
+                      {availableBalance.toFixed(2)} ADSB
+                    </p>
+                  </div>
+                  {/* <DollarSign className="w-8 h-8 text-success" /> */}
                 </div>
-                <DollarSign className="w-8 h-8 text-success" />
+              </div>
+              <div className="p-4 bg-background rounded-lg border border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">USDT Wallet</p>
+                    <p className="text-2xl font-bold text-success">
+                      {availableBalance.toFixed(2)} USDT
+                    </p>
+                  </div>
+                  {/* <DollarSign className="w-8 h-8 text-success" /> */}
+                </div>
               </div>
             </div>
 
@@ -146,7 +133,6 @@ export function WithdrawalContent() {
               />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Minimum: ${minimumWithdrawal}</span>
-                <span>Maximum: ${availableBalance.toFixed(2)}</span>
               </div>
             </div>
 
