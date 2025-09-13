@@ -149,7 +149,7 @@ const AffiliateContent: FC<Props> = ({ onBuyPackageClick }) => {
                       Total Commissions
                     </span>
                     <span className="text-xl font-bold text-success">
-                      ${affiliateInfo?.total_commission} USDT
+                      ${affiliateInfo?.total_commission || "0"} USDT
                     </span>
                   </div>
                 </div>

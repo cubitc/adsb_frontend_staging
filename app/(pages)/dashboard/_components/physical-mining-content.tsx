@@ -7,13 +7,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/_frontend/components/card";
-import GoldenButton from "@/_frontend/components/golden-button";
 import Loader from "@/_frontend/components/loaders/grid-loader";
 import Render from "@/_frontend/components/Render";
+import PaymentStatusBadge from "@/_frontend/components/statuses/payment-status";
+import PreOrderStatusBadge from "@/_frontend/components/statuses/pre-order-status-badge";
 import { Tabs, TabsContent } from "@/_frontend/components/tabs";
+import { PaymentStatusEnum } from "@/_frontend/enums/payment_status_enum";
 import useHttp from "@/_frontend/hooks/use-http";
 import { useModal } from "@/_frontend/hooks/use-modal";
 import PhysicalMiningInfoModel from "@/_frontend/models/physical-mining-info-model";
+import PreOrderModel from "@/_frontend/models/pre-order-model";
+import { cn } from "@/_frontend/utils/css";
+import { toLocalDateTime } from "@/_frontend/utils/date";
 import { api } from "@/constants/api";
 import {
   Clock,
@@ -39,7 +44,9 @@ enum TabEnum {
 type Response = {
   data: PhysicalMiningInfoModel;
 };
-
+type PreOrderResponse = {
+  data: PreOrderModel[];
+};
 export function PhysicalMiningContent() {
   const [tab, setTab] = useState(String(TabEnum.details));
   const { openModal, closeModal } = useModal();
@@ -47,6 +54,9 @@ export function PhysicalMiningContent() {
 
   const getMiningInfo = get<Response>(api.mining.physical.infos);
   const miningInfo = getMiningInfo.data?.data;
+
+  const getPreOrders = get<PreOrderResponse>(api.mining.physical.pre_orders);
+  const preOrderData = getPreOrders.data?.data ?? [];
 
   return (
     <div className="space-y-6">
@@ -147,7 +157,10 @@ export function PhysicalMiningContent() {
                           <li>
                             • Regularly update software to the latest version
                           </li>
-                          <Button className="bg-crypto-gold text-primary-foreground hover:bg-crypto-gold/90  ">
+                          <Button
+                            className="bg-crypto-gold text-primary-foreground hover:bg-crypto-gold/90  "
+                            onClick={() => alert("Functionality coming soon!")}
+                          >
                             Download ADS-B miner software
                           </Button>
                         </ul>
@@ -162,7 +175,29 @@ export function PhysicalMiningContent() {
                     <span>Mining histories</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="bg-gradient-card shadow-card"></CardContent>
+                <CardContent className="bg-gradient-card shadow-card">
+                  <Render>
+                    <Render.When isTrue={getMiningInfo.isLoading}>
+                      <div className="text-center pt-16 pb-16 justify-center">
+                        <Loader />
+                      </div>
+                    </Render.When>
+                    <Render.Else>
+                      <Card className="bg-gradient-card shadow-card">
+                        <CardContent className="py-8 text-center">
+                          <DollarSign className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                          <h3 className="text-lg font-semibold mb-2">
+                            No mining history found.
+                          </h3>
+                          <p className="text-muted-foreground mb-4">
+                            Your connected hardware mined result will appear
+                            here.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </Render.Else>
+                  </Render>
+                </CardContent>
               </Card>
             </div>
           </TabsContent>
@@ -230,16 +265,28 @@ export function PhysicalMiningContent() {
                             </div>
                           </ul>
                         </div>
-                        <GoldenButton
+                        <Button
+                          disabled={Number(miningInfo?.stock) === 0}
+                          className="w-full bg-crypto-gold text-primary-foreground hover:bg-crypto-gold/90 mt-4"
                           onClick={() =>
                             openModal({
-                              view: <PreorderModal onClose={closeModal} />,
+                              view: (
+                                <PreorderModal
+                                  onClose={closeModal}
+                                  onPurchased={() => {
+                                    getMiningInfo?.refetch();
+                                    getPreOrders?.refetch();
+                                  }}
+                                />
+                              ),
                             })
                           }
                         >
                           <CreditCard className="w-4 h-4 mr-2" />
-                          Pre-order now - {miningInfo?.stock} stocks left
-                        </GoldenButton>
+                          {Number(miningInfo?.stock) === 0
+                            ? "Out of stock"
+                            : `Pre-order now - ${miningInfo?.stock} stocks left`}
+                        </Button>
                       </div>
                     </Render.Else>
                   </Render>
@@ -251,7 +298,100 @@ export function PhysicalMiningContent() {
                     <span>Pre-order histories</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="bg-gradient-card shadow-card"></CardContent>
+                <CardContent className="bg-gradient-card shadow-card">
+                  <Render>
+                    <Render.When isTrue={getPreOrders.isLoading}>
+                      <div className="text-center pt-16 pb-16 justify-center">
+                        <Loader />
+                      </div>
+                    </Render.When>
+
+                    <Render.Else>
+                      <div className="space-y-3">
+                        {preOrderData?.length > 0 ? (
+                          preOrderData.map((p) => (
+                            <Card
+                              key={p.id}
+                              className={cn(
+                                "bg-gradient-to-br from-card to-secondary shadow-card  border border-gray-700/90 ",
+                                p.payment?.status !==
+                                  PaymentStatusEnum.Completed &&
+                                  p.payment?.status !==
+                                    PaymentStatusEnum.Cancelled &&
+                                  "cursor-pointer"
+                              )}
+                              onClick={() => {
+                                if (p.payment?.status_url) {
+                                  window.open(p.payment.status_url, "_blank");
+                                }
+                              }}
+                            >
+                              <CardContent className="px-4 py-2">
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <div>{p.full_name}</div>
+                                    <div className="text-sm text-gray-400">
+                                      {p.email}
+                                    </div>
+                                    <div className="text-sm text-gray-400">
+                                      {p.phone_num}
+                                    </div>
+                                    <div className="text-sm text-gray-400">
+                                      {p.address},
+                                    </div>
+                                    <div className="text-sm text-gray-400">
+                                      <div>
+                                        {p.city}, {p.zip_code},
+                                      </div>
+                                      <div>
+                                        {p.state}, {p.country}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="text-sm text-gray-400">
+                                    {toLocalDateTime(p.created_at)}
+                                    <Render>
+                                      <Render.When
+                                        isTrue={
+                                          p.payment?.status ===
+                                          PaymentStatusEnum.Completed
+                                        }
+                                      >
+                                        <div className="flex flex-col items-end">
+                                          <PreOrderStatusBadge
+                                            status={p.status}
+                                            statusHumanized={p.status_humanized}
+                                          />
+                                        </div>
+                                      </Render.When>
+                                      <Render.Else>
+                                        <PaymentStatusBadge
+                                          status={p.payment?.status}
+                                          statusHumanized={
+                                            p.payment?.status_humanized
+                                          }
+                                        />
+                                      </Render.Else>
+                                    </Render>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))
+                        ) : (
+                          <Card className="bg-gradient-card shadow-card">
+                            <CardContent className="py-8 text-center">
+                              <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                              <h3 className="text-lg font-semibold mb-2">
+                                No pre-order history found.
+                              </h3>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </div>
+                    </Render.Else>
+                  </Render>
+                </CardContent>
               </Card>
             </div>
           </TabsContent>

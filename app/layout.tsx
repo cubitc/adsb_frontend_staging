@@ -35,6 +35,7 @@ export default function RootLayout({
               <Toaster
                 position="top-center"
                 toastOptions={{ duration: 3000 }}
+                containerStyle={{ zIndex: 999999 }}
               />
               <GlobalModal />
             </JotaiProvider>

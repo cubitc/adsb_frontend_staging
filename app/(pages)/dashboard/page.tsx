@@ -21,7 +21,6 @@ import {
   DollarSign,
   LayoutDashboard,
   Pickaxe,
-  Shield,
   User,
   Users,
   Wallet,
@@ -39,7 +38,7 @@ import { Badge } from "rizzui/badge";
 import AffiliateContent from "./_components/affiliate-content";
 import { MiningContent } from "./_components/mining-content";
 import PackageContent from "./_components/package-content";
-import { WithdrawalContent } from "./_components/WithdrawalContent";
+import { WithdrawalContent } from "./_components/withdrawal-content";
 
 type ResponseData = {
   data: BalanceModel;
@@ -61,10 +60,10 @@ const Page = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-primary to-crypto-blue rounded-lg flex items-center justify-center">
+              {/* <div className="w-8 h-8 bg-gradient-to-r from-primary to-crypto-blue rounded-lg flex items-center justify-center">
                 <Shield className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-crypto-blue bg-clip-text text-transparent">
+              </div> */}
+              <h1 className="text-xl font-bold text-crypto-blue bg-clip-text  ">
                 {process.env.REACT_APP_NAME}
               </h1>
             </div>

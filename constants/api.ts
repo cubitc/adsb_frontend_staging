@@ -28,6 +28,7 @@ export const api = {
     },
     physical: {
       infos: "v1/minings/physical/infos",
+      pre_orders: "v1/minings/physical/pre-orders",
     },
   },
 };

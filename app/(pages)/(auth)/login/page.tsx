@@ -76,8 +76,8 @@ const Page = () => {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md bg-gradient-to-br from-card to-secondary border-border shadow-[var(--shadow-card)]">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl pb-2 bg-gradient-to-r from-primary to-crypto-blue bg-clip-text text-transparent">
-            ADSB Coin
+          <CardTitle className="text-2xl pb-2 text-crypto-blue bg-clip-text  ">
+            {process.env.REACT_APP_NAME}
           </CardTitle>
           <CardDescription>Login</CardDescription>
         </CardHeader>
