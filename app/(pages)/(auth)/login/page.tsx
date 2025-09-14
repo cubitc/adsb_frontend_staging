@@ -1,4 +1,5 @@
 "use client";
+import Captcha from "@/_frontend/components/captcha";
 import {
   Card,
   CardContent,
@@ -18,7 +19,7 @@ import { api } from "@/constants/api";
 import { routes } from "@/constants/route";
 import { Lock, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useCookies } from "react-cookie";
 import { SubmitHandler } from "react-hook-form";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -30,6 +31,7 @@ type LoginResponse = {
 const Page = () => {
   const { post, getErrorMap } = useHttp();
   const { setUser } = useAppUser();
+  const [token, setToken] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -59,16 +61,7 @@ const Page = () => {
   );
 
   const onSubmit: SubmitHandler<LoginSchemaType> = (data) => {
-    // const data = response?.data as AppUserModel;
-    // const expires = new Date();
-    // expires.setMinutes(expires.getMinutes() + 60);
-
-    // cookies.set("x-token", data?.access_token, {
-    //   path: "/",
-    //   expires,
-    // });
-    // setAppUser(data);
-    loginReq.mutate({ ...data });
+    loginReq.mutate({ ...data, token: token });
   };
   const errorMap = getErrorMap<LoginSchemaType>(loginReq?.error);
 
@@ -113,6 +106,7 @@ const Page = () => {
                   <div>Create an account</div>
                   <FaArrowRightLong />
                 </div>
+                <Captcha onVerify={(token) => setToken(token)} />
               </div>
             )}
           </Form>

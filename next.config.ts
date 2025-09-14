@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     REACT_APP_SERVER_ENDPOINT: process.env.REACT_APP_SERVER_ENDPOINT,
     JWT_SECRET: process.env.JWT_SECRET,
     REACT_APP_NAME: process.env.REACT_APP_NAME,
+    TURNSTILE_SITE_KEY: process.env.TURNSTILE_SITE_KEY,
   },
   async redirects() {
     return [

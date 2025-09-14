@@ -4,5 +4,6 @@ namespace NodeJS {
     REACT_APP_ENDPOINT: string;
     REACT_APP_SERVER_ENDPOINT: string;
     REACT_APP_NAME: string;
+    TURNSTILE_SITE_KEY: string;
   }
 }
