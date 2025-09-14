@@ -265,6 +265,7 @@ const WithdrawalContent: FC<Props> = ({ onWithdrawalSuccess }) => {
                       placeholder="Enter amount"
                       className="border-border"
                       inputClassName="bg-background"
+                      step="any"
                       {...register("amount", {
                         required: "Amount is required",
                         min: {
