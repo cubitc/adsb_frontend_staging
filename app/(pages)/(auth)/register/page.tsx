@@ -1,4 +1,5 @@
 "use client";
+import Captcha from "@/_frontend/components/captcha";
 import {
   Card,
   CardContent,
@@ -29,6 +30,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const referrer = searchParams.get("ref");
   const { post, getErrorMap } = useHttp();
+  const [token, setToken] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -60,7 +62,7 @@ const Page = () => {
   );
 
   const onSubmit: SubmitHandler<RegisterSchemaType> = (data) => {
-    registerReq.mutate({ ...data, ref: refValue });
+    registerReq.mutate({ ...data, ref: refValue, token: token });
   };
   const errorMap = getErrorMap<RegisterSchemaType>(registerReq?.error);
 
@@ -117,6 +119,7 @@ const Page = () => {
                   <div>Login</div>
                   <FaArrowRightLong />
                 </div>
+                <Captcha onVerify={(token) => setToken(token)} />
               </div>
             )}
           </Form>
