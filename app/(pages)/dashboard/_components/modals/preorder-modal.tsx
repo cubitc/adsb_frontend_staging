@@ -41,6 +41,8 @@ const PreorderModal: FC<Props> = ({ onClose, onPurchased }) => {
           onPurchased?.();
           onClose();
         } else {
+          onClose();
+
           window.location.href = data.data.redirect_url!;
         }
       },
