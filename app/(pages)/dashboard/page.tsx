@@ -38,7 +38,7 @@ import { Badge } from "rizzui/badge";
 import AffiliateContent from "./_components/affiliate-content";
 import { MiningContent } from "./_components/mining-content";
 import PackageContent from "./_components/package-content";
-import { WithdrawalContent } from "./_components/withdrawal-content";
+import WithdrawalContent from "./_components/withdrawal-content";
 
 type ResponseData = {
   data: BalanceModel;
@@ -54,6 +54,11 @@ const Page = () => {
 
   const { data, refetch, isLoading } = get<ResponseData>(api.user.balance);
   const balances = data?.data;
+
+  const handleClick = (tab: string) => {
+    setActiveTab(tab);
+    refetch();
+  };
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -221,7 +226,7 @@ const Page = () => {
         {/* Main Dashboard Tabs */}
         <Tabs
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={handleClick}
           className="space-y-6"
         >
           <TabsList className="grid w-full grid-cols-4 bg-card border border-border">
@@ -270,7 +275,7 @@ const Page = () => {
           </TabsContent>
 
           <TabsContent value="withdrawal">
-            <WithdrawalContent />
+            <WithdrawalContent onWithdrawalSuccess={refetch} />
           </TabsContent>
         </Tabs>
       </div>

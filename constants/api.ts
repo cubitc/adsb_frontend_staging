@@ -30,5 +30,10 @@ export const api = {
       infos: "v1/minings/physical/infos",
       pre_orders: "v1/minings/physical/pre-orders",
     },
+    withdrawal: {
+      infos: "v1/withdrawals/infos",
+      create: "v1/withdrawals",
+      list: "v1/withdrawals",
+    },
   },
 };
