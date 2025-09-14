@@ -49,6 +49,7 @@ const ResellerPackageModal: FC<Props> = ({ onClose, pkg, onPurchased }) => {
           onPurchased?.();
           onClose();
         } else {
+          onClose();
           window.location.href = data.data.redirect_url!;
         }
       },
